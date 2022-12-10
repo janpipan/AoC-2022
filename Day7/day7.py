@@ -27,19 +27,71 @@ class Directory:
         return self.files
     
     def getSize(self):
-        return self.size
+        size = 0
+        dirs = self.getDirs()
+        if len(dirs) == 0:
+            files = self.getFiles()
+            for key in files:
+                size += files[key]
+            return size
+        else:
+            for key in dirs:
+                dir = dirs[key]
+                size += dir.getSize()
+        files = self.getFiles()
+        for key in files:
+            size += files[key]
+        return size
     
     def getItems(self):
         return self.childDir | self.files
     
     def getParentDir(self):
         return self.parentDir
+
+    def getDirsSum(self):
+        dirVals = []
+        dirs = self.getDirs()
+        size = self.getSize()
+        if len(dirs) == 0 and size <= 100000:
+            return size
+        elif len(dirs) != 0:
+            if size <= 100000:
+                dirVals.append(size)
+            subDirs = []
+            for key in dirs:
+                dir = dirs[key]
+                subDirs.append(dir.getDirsSum())
+            dirVals.append(subDirs)
+        return dirVals
+            
         
+
+
+        """ sum = 0
+        dirs = self.getDirs()
+        size = self.getSize()
+        dirsSum = []
+        #print(self.name)
+        if len(dirs) == 0 and size <= 100000:
+            return size
+        elif len(dirs) != 0:
+            for key in dirs:
+                dir = dirs[key]
+                dirsSum.append(dir.getDirsSum())
+                #if dirsSum <= 100000:
+                sum += dirsSum
+            if size <= 100000:
+                sum += size
+        return sum  """
+
+                
+            
 
 if __name__ == '__main__':
     directory = Directory('/')
     currentDir = directory
-    with open('test.txt') as file:
+    with open('day7.txt') as file:
         for line in file:
             line = line.strip().split(" ")
             if line[1] == 'ls':
@@ -61,6 +113,8 @@ if __name__ == '__main__':
                 else:
                     currentDir = currentDir.getParentDir()
 
-    print(directory.getSize())
+    print(sum(directory.getDirsSum()))
+
+
             
             
